@@ -33,7 +33,7 @@ for i in ${pkgs}; do #they do need to be in an order
 done
 cmdML="${p}/bin/octave --texi-macros-file /dev/null --eval "   #now to start octave
 cmd="\"more off;${cmd};pkg list;addpath('${p}/mex');cd test;test;exit\""  #final set of commands to octave
-#cmd="\"more off;${cmd1};pkg list;addpath('${p}/mex');cd test;test;exit\""  #do just test of parametric channel model
+#cmd="\"more off;${cmd1};pkg list;addpath('${p}/mex');cd test;test;exit\""  #do just test of octave
 echo "${cmdML} ${cmd}"
 eval "${cmdML} ${cmd}" | tee ../pkg.log
 
