@@ -11,7 +11,7 @@ build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/oct
 		octave --texi-macros-file /dev/null
 		
 		
-<b>archive:</b? copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2), then
+<b>archive:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2), then
 	
 		./to_build <prefix_dir>/octave && tar -cJf octave.tar.xz -C <install_dir> octave
 
