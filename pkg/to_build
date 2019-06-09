@@ -5,13 +5,13 @@ p="${PWD}/../local/octave" && [ -n "$1" ] && p="$1"
 
 set -e
 
-#pkgs we want installed - order is important
-pkgs="control-3.1.0.tar.gz nan-3.1.4.tar.gz struct-1.0.15.tar.gz optim-1.5.2.tar.gz signal-1.4.0.tar.gz"  #old values
-pkgs="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz optim-1.5.2.tar.gz signal-1.4.1.tar.gz"  #newer values
-pkgs="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz io-2.4.12.tar.gz statistics-1.4.1.tar.gz optim-1.6.0.tar.gz signal-1.4.1.tar.gz"  #newest values
+#octave packages we want installed - order is important
+PKGS="control-3.1.0.tar.gz nan-3.1.4.tar.gz struct-1.0.15.tar.gz optim-1.5.2.tar.gz signal-1.4.0.tar.gz"  #old values
+PKGS="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz optim-1.5.2.tar.gz signal-1.4.1.tar.gz"  #newer values
+PKGS="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz io-2.4.12.tar.gz statistics-1.4.1.tar.gz optim-1.6.0.tar.gz signal-1.4.1.tar.gz"  #newest values
 
 #grab packages if we don't have them
-for i in ${pkgs}; do
+for i in ${PKGS}; do
 	[ ! -e "$i" ] && \
 	curl -L https://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/${i}/download > ${i}
 done
@@ -26,7 +26,7 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${p}/lib
 
 cmd="pkg prefix ${p}/octave_packages ${p}/octave_packages_arch;pkg global_list ${p}/.octave_packages"  #set up where to store packages
 cmd1="${cmd}"
-for i in ${pkgs}; do #they do need to be in an order
+for i in ${PKGS}; do #they do need to be in an order
 	pkg=$(echo $i|awk -F- '{print $1}')     #name of the bloody thing
 	cmd="${cmd};pkg install -global ${i};pkg load ${pkg}"  #install and load
 	cmd1="${cmd1};pkg load ${pkg}"  #load
@@ -37,4 +37,4 @@ cmd="\"more off;${cmd};pkg list;addpath('${p}/mex');cd test;test;exit\""  #final
 echo "${cmdML} ${cmd}"
 eval "${cmdML} ${cmd}" | tee ../pkg.log
 
-rm -f ${pkgs}
+rm -f ${PKGS}
