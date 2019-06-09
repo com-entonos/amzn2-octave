@@ -25,4 +25,4 @@ build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/oct
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<prefix_dir>/octave/lib
 		octave --texi-macros-file /dev/null
 		
-
+may need to edit pkg/to_build to include required octave packages and provide a test in pkg/test
