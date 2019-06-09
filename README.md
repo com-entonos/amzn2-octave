@@ -3,7 +3,7 @@ minimum octave for amazon linux 2 ami
 
 build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/octave] and uses -mtune=skylake for avx/avx2 (see to_build_oct_lib)
 
-<b>quick:</b> opy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
+<b>quick:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
 	
 		./to_build
 		export PATH:$PATH:local/octave/bin
