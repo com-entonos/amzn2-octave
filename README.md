@@ -16,12 +16,12 @@ quick:
 		
 		
 archive:
-
 	copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2), then
 	
 		./to_build <prefix_dir>/octave && tar -cJf octave.tar.xz -C <install_dir> octave
 
-	will give self-contained octave install. on executing machine
+	
+execute node:
 	
 		yum install -y libgfortran
 		
