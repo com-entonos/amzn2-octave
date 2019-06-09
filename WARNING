@@ -1,0 +1,6 @@
+WARNINING 
+	there is Company and 3rd party IP in this distribution.
+		everything in build_octave/mex/*.mexa64 is 3rd party IP
+		everything in build_octave/pkg/test/* is Company IP
+	the resulting install will have the 3rd party IP included for convenience (since it is dependent on version of octave)
+END OF WARNING

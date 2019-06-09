@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+#need to pull in tools and some develoment libraries
+sudo yum groupinstall -y "Development tools" && \
+sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel
+
+#let's avoid hdd/ssd - optional
+pp="/shared" && sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -t tmpfs tmpfs "${pp}" && \
+	mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
+
+#prefix for install
+p="${PWD}/local/octave" && [ -n "$1" ] && p="$1"
+
+#arch is set in to_build_oct_lib, the default is "-mtune=skylake" so we have avx/avx2
+./to_build_oct_lib "${p}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}"
