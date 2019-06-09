@@ -24,13 +24,9 @@ archive:
 execute node:
 	
 		yum install -y libgfortran
-		
 		tar -xf octave.tar.xz -C <prefix_dir>
-		
 		export PATH:$PATH:<prefix_dir>/octave/bin
-		
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<prefix_dir>/octave/lib
-		
 		octave --texi-macros-file /dev/null
 		
 
