@@ -10,11 +10,8 @@ quick:
 		copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
 	
 		./to_build
-		
 		export PATH:$PATH:local/octave/bin
-		
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:local/octave/lib
-		
 		octave --texi-macros-file /dev/null
 		
 		
