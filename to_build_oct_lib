@@ -37,10 +37,10 @@ function mk_lapack {
 		sed "s/skylake/${ARCH}/g" patch.lapack > patch.lapack.${ARCH} && \
 		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && \
 		tar -xvf $z && patch -p0 -fNu < patch.lapack.${ARCH} && cd $j && make -j4 | tee ../lapack.log && \
-		mv liblapack.* libblas.* ${p}/lib && cd .. && rm -rf ${j}* && ulimit -s ${ou}
+		mv liblapack.* libblas.* "${p}/lib" && cd .. && rm -rf ${j}* && ulimit -s ${ou}
 }
 
-function mk_octave_510 {   #but there's something wrong since hesnr.m crashes w/ a free statement. ugh
+function mk_octave_510 {   #but there's something wrong since test.m crashes w/ a free statement because of 3rd party *.mexa64 files given. ugh
         z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/octave/${z}" && \
                 j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && \
                 tar -xvf $z && cd $j && \

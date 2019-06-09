@@ -3,6 +3,7 @@
 set -e
 
 #need to pull in tools and some develoment libraries
+sudo yum update -y
 sudo yum groupinstall -y "Development tools" && \
 sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel
 

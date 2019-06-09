@@ -18,6 +18,7 @@ build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/oct
 	
 <b>execute node:</b> Bake into AMI or container
 	
+		yum update -y
 		yum install -y libgfortran
 		tar -xf octave.tar.xz -C <prefix_dir>
 		export PATH:$PATH:<prefix_dir>/octave/bin
