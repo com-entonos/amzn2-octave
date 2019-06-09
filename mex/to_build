@@ -4,14 +4,14 @@
 
 
 #set p to what --prefix was when octave was installed
-p="${PWD}/../local/octave" && [ -n "$1" ] && p="$1"
+p="${PWD}/../local" && [ -n "$1" ] && p="$1"
 
 set -e
 
-mkdir -p "${p}/lib"
+mkdir -p ${p}/lib
 o=${PWD}
 
-cd "${p}/lib"
+cd ${p}/lib
 if [ ! -e "libmx.so" ]; then gcc -shared -lc -o libmx.so; fi   #make linker happy
 if [ ! -e "libmex.so" ]; then gcc -shared -lc -o libmex.so; fi
 if [ ! -e "libmat.so" ]; then gcc -shared -lc -o libmat.so; fi
@@ -29,9 +29,9 @@ mxArray *mxCreateDoubleMatrix_700(mwSize m, mwSize n, mxComplexity ComplexFlag)
     return mxCreateDoubleMatrix(m, n, ComplexFlag);
 }" > ud.c
 
-"${p}/bin/mkoctfile" -c ud.c  # deal w/ some undocumented matlab functions
+${p}/bin/mkoctfile -c ud.c  # deal w/ some undocumented matlab functions
 
-lib="$(find "${p}/lib/" -name liboctinterp.so|tail -1|xargs -L 1 dirname)"   #where is octave's octinterp library? just grab one FIXME
+lib=$(find ${p}/lib/ -name liboctinterp.so|tail -1|xargs -L 1 dirname)   #where is octave's octinterp library? just grab one FIXME
 
 echo "using ${lib}..."
 
@@ -42,17 +42,17 @@ for mex in *.mexa64; do  #should work on 32bit?
 	name=$(echo ${mex}|sed "s/.mexa64//")
 
 	if [ ! -e "${p}/lib/${mex}" ]; then   #need the original mexa64 file
-		cp ${mex} "${p}/lib"
+		cp ${mex} ${p}/lib
 	fi
 	if [ ! -e "${p}/lib/lib${name}.so" ]; then    #symbolic link to mexa64 as a shared library
-		cd "${p}/lib"
+		cd ${p}/lib
 		ln -s ${mex} lib${name}.so
 		cd ${o}
 	fi
 
-	mkdir -p "${p}/mex"
+	mkdir -p ${p}/mex
 	if [ ! -e "${p}/mex/${name}.mex" ]; then   #the magic
-		ld -shared -Bsymbolic -Bsymbolic-functions -o "${p}/mex/${name}.mex" -L"${lib}" -L"${p}/lib" -loctinterp -l${name} -rpath '$ORIGIN' ud.o
+		ld -shared -Bsymbolic -Bsymbolic-functions -o ${p}/mex/${name}.mex -L${lib} -L${p}/lib -loctinterp -l${name} -rpath '$ORIGIN' ud.o
 	fi
 	
 done

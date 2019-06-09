@@ -16,7 +16,7 @@ function get_tarball {
 function mk_glpk {
 	z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/glpk/${z}" && \
 		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && tar -xvf $z && cd $j && \
-		./configure --prefix="${p}" --enable-shared CFLAGS="-O2 -mtune=${ARCH}" | tee ../glpk.log && \
+		./configure --prefix=${p} --enable-shared CFLAGS="-O2 -mtune=${ARCH}" | tee ../glpk.log && \
 		make -j4 | tee -a ../glpk.log && make -j4 check | tee -a ../glpk.log && \
 		make install | tee -a ../glpk.log && cd .. && rm -rf ${j}*
 }
@@ -25,10 +25,10 @@ function mk_fftw {
 	z="$1" && cd "$o" && get_tarball "http://www.fftw.org/${z}" && \
 		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && tar -xvf $z && cd $j && \
 		OPT="--enable-sse2 --enable-avx --enable-avx2 --enable-shared=yes" && \
-		./configure --prefix="${p}" ${OPT} F77=gfortran CC=gcc | tee ../fftw.log && make -j4 | tee -a ../fftw.log && \
+		./configure --prefix=${p} ${OPT} F77=gfortran CC=gcc | tee ../fftw.log && make -j4 | tee -a ../fftw.log && \
 		make -j4 check | tee -a ../fftw.log && make install | tee -a ../fftw.log && make distclean && \
 		OPT+="--enable-single --enable-sse" && \
-		./configure --prefix="${p}" ${OPT} F77=gfortran CC=gcc | tee -a ../fftw.log && make -j4 | tee -a ../fftw.log && \
+		./configure --prefix=${p} ${OPT} F77=gfortran CC=gcc | tee -a ../fftw.log && make -j4 | tee -a ../fftw.log && \
 		make -j4 check | tee -a ../fftw.log && make install | tee -a ../fftw.log && cd .. && rm -rf ${j}*
 }
 
@@ -44,10 +44,10 @@ function mk_octave_510 {   #but there's something wrong since hesnr.m crashes w/
         z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/octave/${z}" && \
                 j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && \
                 tar -xvf $z && cd $j && \
-                ./configure --prefix="${p}"  --disable-atomic-refcount --disable-rpath --disable-java \
-                --with-glpk-includedir="${p}/include" --with-glpk-libdir="${p}/lib" --without-portaudio \
-                --disable-docs --with-blas="${p}/lib/libblas.a" --with-lapack="${p}/lib/liblapack.a" --with-fftw3f-includedir="${p}/include" \
-                --with-fftw3f-libdir="${p}/lib" --with-fftw3-includedir="${p}/include" --with-fftw3-libdir="${p}/lib" --without-arpack \
+                ./configure --prefix=${p}  --disable-atomic-refcount --disable-rpath --disable-java \
+                --with-glpk-includedir=${p}/include --with-glpk-libdir=${p}/lib --without-portaudio \
+                --disable-docs --with-blas=${p}/lib/libblas.a --with-lapack=${p}/lib/liblapack.a --with-fftw3f-includedir=${p}/include \
+                --with-fftw3f-libdir=${p}/lib --with-fftw3-includedir=${p}/include --with-fftw3-libdir=${p}/lib --without-arpack \
                 --without-suitesparseconfig --without-sundials_nvecserial --without-sundials_ida --without-hdf5 --without-sndfile \
                 --without-qhull --without-umfpack --without-cxsparse --without-cholmod --without-colamd --without-ccolamd --without-camd \
                 --without-amd --without-qt --without-qrupdate --without-fltk  --without-opengl --without-bz2 --without-qscintilla --without-klu \
@@ -62,9 +62,9 @@ function mk_octave {
 	z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/octave/${z}" && \
 		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && \
 		tar -xvf $z && cd $j && \
-		./configure --prefix="${p}" --disable-java --with-glpk-includedir="${p}/include" --with-glpk-libdir="${p}/lib" \
-		--disable-docs --with-blas="${p}/lib/libblas.a" --with-lapack="${p}/lib/liblapack.a" --with-fftw3f-includedir="${p}/include" \
-		--with-fftw3f-libdir="${p}/lib" --with-fftw3-includedir="${p}/include" --with-fftw3-libdir="${p}/lib" --without-arpack \
+		./configure --prefix=${p} --disable-java --with-glpk-includedir=${p}/include --with-glpk-libdir=${p}/lib \
+		--disable-docs --with-blas=${p}/lib/libblas.a --with-lapack=${p}/lib/liblapack.a --with-fftw3f-includedir=${p}/include \
+		--with-fftw3f-libdir=${p}/lib --with-fftw3-includedir=${p}/include --with-fftw3-libdir=${p}/lib --without-arpack \
 		--without-umfpack --without-cxsparse --without-cholmod --without-colamd --without-ccolamd --without-cholmod --without-camd \
 		--without-amd --without-OSMesa --without-qt --without-qrupdate --without-fltk  --without-opengl --without-bz2 \
 		--without-hdf5 --without-sndfile --without-portaudio --disable-rpath \
@@ -77,6 +77,6 @@ function mk_octave {
 
 o=${PWD}
 mkdir -p "${p}/lib"
-export LD_LIBRARY_PATH="${p}/lib:$LD_LIBRARY_PATH"  #otherwise it doesn't find ncurses library, sigh
+export LD_LIBRARY_PATH=${p}/lib:$LD_LIBRARY_PATH  #otherwise it doesn't find ncurses library, sigh
 
 mk_glpk "glpk-4.65.tar.gz" && mk_fftw "fftw-3.3.8.tar.gz" && mk_lapack "lapack-3.8.0.tar.gz" && mk_octave "octave-4.2.2.tar.gz" # "octave-5.1.0.tar.gz"
