@@ -1,7 +1,7 @@
 # amzn2-octave
 minimum octave for amazon linux 2 ami
 
-build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/octave] and uses -mtune=skylake for avx/avx2 (see to_build_oct_lib)
+build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/octave]
 
 <b>quick:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
 	
@@ -25,4 +25,9 @@ build glpk, ffftw, lapack and octave to relocatable [default is ${PWD}/local/oct
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<prefix_dir>/octave/lib
 		octave --texi-macros-file /dev/null
 		
-may need to edit pkg/to_build to include required octave packages and provide a test in pkg/test
+NOTES:
+
+1) may need to edit pkg/to_build to include required octave packages and provide a test in pkg/test
+2) if other than avx/avx2, edit to_build_oct_lib (ARCH and fftw configure options)
+3)   ...
+4) profit
