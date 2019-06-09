@@ -8,8 +8,8 @@ sudo yum groupinstall -y "Development tools" && \
 sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel
 
 #let's avoid hdd/ssd - optional
-pp="/shared" && sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -t tmpfs tmpfs "${pp}" && \
-	mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
+#pp="/shared" && sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -t tmpfs tmpfs "${pp}" && \
+#	mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
 
 #prefix for install
 p="${PWD}/local/octave" && [ -n "$1" ] && p="$1"
