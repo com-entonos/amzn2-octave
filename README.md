@@ -18,7 +18,7 @@ it appears even the most current version of octave hardcode paths during install
 <b>quick:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
 	
 		./to_build /opt/octave
-		export PATH:$PATH:/opt/octave
+		export PATH:$PATH:/opt/octave/bin
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/octave/lib
 		octave --texi-macros-file /dev/null
 		
