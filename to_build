@@ -2,17 +2,27 @@
 
 set -e
 
-#need to pull in tools and some develoment libraries
+#need to pull in tools and some develoment libraries (texinfo so octave is quiet during 'make check')
 sudo yum update -y
 sudo yum groupinstall -y "Development tools" && \
-sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel
+sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel texinfo
 
-#let's avoid hdd/ssd - optional
-#pp="/shared" && sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -t tmpfs tmpfs "${pp}" && \
-#	mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
+#let's avoid hdd/ssd - optional (need ~5GB)
+pp="/shared" 
+if [ -d "${pp}/build_octave" ]; then
+	cd "${pp}/build_octave"
+else
+	sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -o size=5G -t tmpfs tmpfs "${pp}" && \
+		mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
+fi
 
 #prefix for install
-p="${PWD}/local/octave" && [ -n "$1" ] && p="$1"
+p="/shared/octave" && [ -n "$1" ] && p="$1"
 
-#arch is set in to_build_oct_lib, the default is "-mtune=skylake" so we have avx/avx2
-./to_build_oct_lib "${p}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}"
+#ARCH=processor type for libraries and octave.
+# ARCH needs to be a valid option for both gcc -mtune= option and in openBLAS's TargetList.txt (will convert ARCH to upper case for openBLAS)
+# ARCH=haswell means both avx and avx2 are available
+ARCH="haswell" && [ -n "$2" ] && ARCH="$2"
+
+#go build libraries, octave, squash *.mexa64, install packages and test w/ pkg/test/test.m
+./to_build_oct_lib "${p}" "${ARCH}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}"

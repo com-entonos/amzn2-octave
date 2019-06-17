@@ -1,13 +1,12 @@
 #!/bin/bash
 
 #set p to what --prefix was when octave was installed
-p="${PWD}/../local/octave" && [ -n "$1" ] && p="$1"
+p="/shared/octave" && [ -n "$1" ] && p="$1"
 
 set -e
 
 #octave packages we want installed - order is important
 PKGS="control-3.1.0.tar.gz nan-3.1.4.tar.gz struct-1.0.15.tar.gz optim-1.5.2.tar.gz signal-1.4.0.tar.gz"  #old values
-PKGS="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz optim-1.5.2.tar.gz signal-1.4.1.tar.gz"  #newer values
 PKGS="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz io-2.4.12.tar.gz statistics-1.4.1.tar.gz optim-1.6.0.tar.gz signal-1.4.1.tar.gz"  #newest values
 
 #grab packages if we don't have them
@@ -16,13 +15,17 @@ for i in ${PKGS}; do
 	curl -L https://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/${i}/download > ${i}
 done
 
-mkdir -p ${p}/lib
+mkdir -p "${p}/lib"
 
 opt="$PATH"     #store old PATH and LD_LIBRARY_PATH
 old="$LD_LIBRARY_PATH"
 
-export PATH=${PATH}:${p}/bin   #let's find the octave install
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${p}/lib
+export PATH="${PATH}:${p}/bin"   #let's find the octave install
+if [ -n "$LD_LIBRARY_PATH" ]; then
+        export LD_LIBRARY_PATH="${p}/lib:$LD_LIBRARY_PATH"
+else
+        export LD_LIBRARY_PATH="${p}/lib"
+fi
 
 cmd="pkg prefix ${p}/octave_packages ${p}/octave_packages_arch;pkg global_list ${p}/.octave_packages"  #set up where to store packages
 cmd1="${cmd}"
@@ -35,6 +38,6 @@ cmdML="${p}/bin/octave --texi-macros-file /dev/null --eval "   #now to start oct
 cmd="\"more off;${cmd};pkg list;addpath('${p}/mex');cd test;test;exit\""  #final set of commands to octave
 #cmd="\"more off;${cmd1};pkg list;addpath('${p}/mex');cd test;test;exit\""  #do just test of octave
 echo "${cmdML} ${cmd}"
-eval "${cmdML} ${cmd}" | tee ../pkg.log
+eval "${cmdML} ${cmd}" > >(tee -a ../pkg.log) 2> >(tee -a ../pkg.log >&2)
 
 rm -f ${PKGS}
