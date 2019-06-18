@@ -38,6 +38,6 @@ cmdML="${p}/bin/octave --texi-macros-file /dev/null --eval "   #now to start oct
 cmd="\"more off;${cmd};pkg list;addpath('${p}/mex');cd test;test;exit\""  #final set of commands to octave
 #cmd="\"more off;${cmd1};pkg list;addpath('${p}/mex');cd test;test;exit\""  #do just test of octave
 echo "${cmdML} ${cmd}"
-eval "${cmdML} ${cmd}" > >(tee -a ../pkg.log) 2> >(tee -a ../pkg.log >&2)
+eval "${cmdML} ${cmd}" > >(tee -a ../pkg.log) 2> >(tee -a ../pkg.err >&2)
 
 rm -f ${PKGS}

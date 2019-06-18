@@ -50,4 +50,4 @@ NOTES:
 
 when i 'squashed' the third-party \*.mexa64 files into octave > v4.2.2, rewarded with a runtime error ("free(): invalid next size (fast)"), so this customer needed to stay with v4.2.2 (since they couldn't provide updated \*.mexa64 files), otherwise octave v5.1.0 is fine by itself.
 
-start to finish: ~77 minutes under vmware (4 cores, 8GB; amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova) on macOS 10.13.6 with 2.2GHz Core i7 Sandy Bridge (2720QM)
+start to finish: ~60 minutes under vmware (4 cores, 8GB; amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova) on macOS 10.13.6 with 2.2GHz Core i7 Sandy Bridge (2720QM)

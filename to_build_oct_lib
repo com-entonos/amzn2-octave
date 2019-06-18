@@ -1,10 +1,31 @@
 #!/bin/bash
 
-ARCH=haswell && [ -n "$2" ] && ARCH="$2" #ARCH must be defined for gcc's -mtune option AND in openblas's TargetList.txt
+ARCH=haswell && [ -n "$2" ] && ARCH="$2" #ARCH must be defined for gcc's -march option AND in openblas's TargetList.txt
 NJ=4           #number of jobs for make
 
+FFTW=""
 ARCHB=$(echo ${ARCH} | awk '{print toupper($1)}')
-[ "${ARCH}" == "skylake" ] && ARCHB="SKYLAKEX"   #skylake is a special case, apparently
+case $ARCH in   #mapping of gcc's -march options to openblas?
+	"skylake-avx512")  ARCHB="SKYLAKEX" && FFTW="--enable-avx512";;
+	"skylake")  ARCHB="SKYLAKEX" && FFTW="--enable-avx2";;
+	"broadwell"|"haswell")  ARCHB="HASWELL" && FFTW="--enable-avx2";;
+	"ivybridge"|"sandybridge")  ARCHB="SANDYBRIDGE" && FFTW="--enable-avx";;
+	"westmere"|"nehalem")  ARCHB="NEHALEM";;
+	*)  #don't know, just use native machine's capabilities...
+		[ $(lscpu | grep avx | wc -l) -gt 0 ] && FFTW="--enable-avx"
+		[ $(lscpu | grep avx2 | wc -l) -gt 0 ] && FFTW="--enable-avx2"
+		[ $(lscpu | grep avx512 | wc -l) -gt 0 ] && FFTW="--enable-avx512"
+		[ "${ARCH}" == "native" ] && ARCHB=""
+esac
+[ -n "${ARCHB}" ] && ARCHB="TARGET=${ARCHB}"
+
+z=""
+[ $(lscpu | grep avx | wc -l) -gt 0 ] && z="--enable-avx"
+[ $(lscpu | grep avx2 | wc -l) -gt 0 ] && z=" --enable-avx2"
+[ $(lscpu | grep avx512 | wc -l) -gt 0 ] && z=" --enable-avx512"
+docheck="" && [ "${z}" == "${FFTW}" ] && docheck=1
+FFTW+=" --enable-shared=yes --enable-static=no"
+#FFTW+=" --enable-threads --enable-openmp"   we don't need this here
 
 # this works for amazon linux 2 ami (amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova)
 #   installs gcc/gfortran 7.3.1 20180303 (Red Hat 7.3.1-5)
@@ -20,34 +41,37 @@ function get_tarball {
 function mk_glpk {
 	z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/glpk/${z}" && \
 		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && tar -xvf $z && cd $j && \
-		./configure --prefix="${p}" --enable-shared --enable-static=no CFLAGS="-O2 -mtune=${ARCH}" > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.log >&2) && \
-		make -j${NJ} > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.log >&2) && \
-		make -j${NJ} check > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.log >&2) && \
-		make install > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.log >&2) && cd .. && rm -rf ${j}*
+		./configure --prefix="${p}" --enable-shared --enable-static=no CFLAGS="-O2 -march=${ARCH}" > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2) && \
+		make -j${NJ} > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2) && \
+# make check may fail if natve < $ARCH
+		if [ -n "${docheck}" ]; then make -j${NJ} check > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
+		make install > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2) && cd .. && rm -rf ${j}*
 }
 
 function mk_fftw {
 	z="$1" && cd "$o" && get_tarball "http://www.fftw.org/${z}" && \
 		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && tar -xvf $z && cd $j && \
-		OPT="--enable-sse2 --enable-avx --enable-avx2 --enable-shared=yes --enable-static=no" && \
-		./configure --prefix="${p}" ${OPT} F77=gfortran CC=gcc > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.log >&2) && \
-		make -j${NJ} > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.log >&2) && \
-		make -j${NJ} check > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.log >&2) && \
-		make install > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.log >&2) && make distclean && \
-		OPT="--enable-single --enable-sse --enable-avx --enable-avx2 --enable-shared=yes --enable-static=no" && \
-		./configure --prefix="${p}" ${OPT} F77=gfortran CC=gcc > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.log >&2) && \
-		make -j${NJ} > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.log >&2) && \
-		make -j${NJ} check > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.log >&2) && \
-		make install > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.log >&2) && cd .. && rm -rf ${j}*
+		OPT="--enable-sse2 ${FFTW}" && \
+		./configure --prefix="${p}" ${OPT} F77=gfortran CC=gcc CFLAGS="-march=${ARCH}" > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.err >&2) && \
+		make -j${NJ} > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.err >&2) && \
+# make check may fail if natve < $ARCH
+		if [ -n "${docheck}" ]; then make -j${NJ} check > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
+		make install > >(tee -a ../fftw.log) 2> >(tee -a ../fftw.err >&2) && make distclean && \
+		OPT="--enable-single --enable-sse ${FFTW}" && \
+		./configure --prefix="${p}" ${OPT} F77=gfortran CC=gcc CFLAGS="-march=${ARCH}" > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2) && \
+		make -j${NJ} > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2) && \
+# make check may fail if natve < $ARCH
+		if [ -n "${docheck}" ]; then make -j${NJ} check > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
+		make install > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2) && cd .. && rm -rf ${j}*
 }
 function mk_openblas {
 	z="$1" && cd "$o" && get_tarball "http://github.com/xianyi/OpenBLAS/archive/${z}" && tar -xvf $z && cd OpenBLAS* && \
-# make test (all=libs netlib test shared) may fail if native < ARCH
-		make USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 TARGET=$ARCHB NO_STATIC=1 NO_SHARED=0 \
-		BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.log >&2) && \
-#		make libs netlib shared USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 TARGET=$ARCHB \
-#		NO_STATIC=1 NO_SHARED=0 BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.log >&2) && \
-		make NO_STATIC=1 PREFIX="${p}" install > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.log >&2) && \
+# make test (all=libs netlib test shared) may fail if native < $ARCH
+		if [ -n "${docheck}" ]; then make USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 ${ARCHB} NO_STATIC=1 NO_SHARED=0 \
+		BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2); else \
+		make libs netlib shared USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 ${ARCHB} \
+		NO_STATIC=1 NO_SHARED=0 BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2);fi  && \
+		make NO_STATIC=1 PREFIX="${p}" install > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2) && \
 		cd "${p}/lib" && ln -s libopenblas.so libblas.so && cd "$o" && rm -rf OpenBLAS* ${z}
 }
 
@@ -62,14 +86,14 @@ function mk_octave_510 {   #but there's something wrong since test.m crashes w/ 
                 --without-qhull --without-umfpack --without-cxsparse --without-cholmod --without-colamd --without-ccolamd --without-camd \
                 --without-amd --without-qt --without-qrupdate --without-fltk  --without-opengl --without-bz2 --without-qscintilla --without-klu \
                 --without-suitesparseconfig --without-sundials_nvecserial --without-sundials_ida --without-hdf5 --without-sndfile \
-                CC=gcc CFLAGS="-O2 -mtune=${ARCH} -DM_PI=3.1415926535897932384" \
-                CXX=g++ CXXFLAGS="-g -O2 -mtune=${ARCH}" \
-                F77=gfortran FFLAGS="-O2 -mtune=${ARCH}" \
-		CPPFLAGS="-I${p}/include" LDFLAGS="-L${p}/lib" > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && \
-		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && \
-# check may fail if native < ARCH
-		make check > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && \
-		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && cd .. && rm -rf ${j}*
+                CC=gcc CFLAGS="-O2 -march=${ARCH} -DM_PI=3.1415926535897932384" \
+                CXX=g++ CXXFLAGS="-g -O2 -march=${ARCH}" \
+                F77=gfortran FFLAGS="-O2 -march=${ARCH}" \
+		CPPFLAGS="-I${p}/include" LDFLAGS="-L${p}/lib" > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
+		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
+# make check may fail if natve < $ARCH
+		if [ -n "${docheck}" ]; then make check > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
+		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && cd .. && rm -rf ${j}*
 
 }
 function mk_octave_422 {
@@ -83,14 +107,14 @@ function mk_octave_422 {
 		--without-qhull --without-umfpack --without-cxsparse --without-cholmod --without-colamd --without-ccolamd --without-camd \
 		--without-amd --without-OSMesa --without-qt --without-qrupdate --without-fltk --without-opengl --without-bz2 \
 		--without-hdf5 --without-sndfile \
-		CC=gcc CFLAGS="-O2 -mtune=${ARCH} -DM_PI=3.1415926535897932384" \
-		CXX=g++ CXXFLAGS="-g -O2 -mtune=${ARCH}" \
-		F77=gfortran FFLAGS="-O2 -mtune=${ARCH}" \
-		CPPFLAGS="-I${p}/include" LDFLAGS="-L${p}/lib" > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && \
-		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && \
-# check may fail if native < ARCH
-		make check > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && \
-		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.log >&2) && cd .. && rm -rf ${j}*
+		CC=gcc CFLAGS="-O2 -march=${ARCH} -DM_PI=3.1415926535897932384" \
+		CXX=g++ CXXFLAGS="-g -O2 -march=${ARCH}" \
+		F77=gfortran FFLAGS="-O2 -march=${ARCH}" \
+		CPPFLAGS="-I${p}/include" LDFLAGS="-L${p}/lib" > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
+		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
+# make check may fail if natve < $ARCH
+		if [ -n "${docheck}" ]; then make check > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
+		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && cd .. && rm -rf ${j}*
 }
 
 o=${PWD}
