@@ -9,10 +9,10 @@ it appears even the most current version of octave hardcode paths during install
 
 <b>summary:</b> install glpk, fftw, openblas and octave to directory [default is /shared/octave]. 
 
-		./to_build [prefix] [process_type]
+		./to_build [prefix] [processor_type]
 
-where \[prefix] is the installation directory and \[process_type] needs to be defined by both 'gcc -march=' option and in openBLAS's TargetList.txt (see 'to_build_lib_oct').
-if \[process_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = haswell (see to_build) so we have avx2.
+where \[prefix] is the installation directory and \[processor_type] needs to be defined by both 'gcc -march=' option and in openBLAS's TargetList.txt (see 'to_build_lib_oct').
+if \[processor_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = haswell (see to_build) so we have avx2.
 
 
 <b>quick:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
