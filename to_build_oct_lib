@@ -21,8 +21,8 @@ esac
 
 z=""
 [ $(lscpu | grep avx | wc -l) -gt 0 ] && z="--enable-avx"
-[ $(lscpu | grep avx2 | wc -l) -gt 0 ] && z=" --enable-avx2"
-[ $(lscpu | grep avx512 | wc -l) -gt 0 ] && z=" --enable-avx512"
+[ $(lscpu | grep avx2 | wc -l) -gt 0 ] && z="--enable-avx2"
+[ $(lscpu | grep avx512 | wc -l) -gt 0 ] && z="--enable-avx512"
 docheck="" && [ "${z}" == "${FFTW}" ] && docheck=1
 FFTW+=" --enable-shared=yes --enable-static=no"
 #FFTW+=" --enable-threads --enable-openmp"   we don't need this here
