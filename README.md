@@ -9,7 +9,7 @@ octave hardcodes full paths during installation so you need to settle on one pla
 
 <b>summary:</b> install glpk, fftw, openblas and octave to directory [default is /shared/octave] for a given processor type. 
 
-		./to_build [prefix] [processor_type]
+		./to_build [prefix [processor_type]]
 
 where \[prefix] is the installation directory and \[processor_type] needs to be defined by both 'gcc -march=' option and in openBLAS's TargetList.txt (see 'to_build_lib_oct').
 if \[processor_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = haswell (see 'to_build') so we have avx2.
