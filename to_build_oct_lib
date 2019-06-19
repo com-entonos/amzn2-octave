@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCH=haswell && [ -n "$2" ] && ARCH="$2" #ARCH must be defined for gcc's -march option AND in openblas's TargetList.txt
+ARCH=native && [ -n "$2" ] && ARCH="$2" #ARCH must be defined for gcc's -march option AND in openblas's TargetList.txt
 NJ=4           #number of jobs for make
 
 FFTW=""
