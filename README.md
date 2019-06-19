@@ -26,8 +26,8 @@ if \[processor_type] > compiling machine, then tests for openBLAS and Octave wil
 		
 <b>archive:</b> on running amazon linux 2 instance (vm or ec2), then e.g.
 	
-		git clone https://github.com/com-entonos/amzn2-octave.git && \
-		cd amzn2-octave && ./to_build /opt/octave_haswell haswell && tar -cJf octave_haswell.tar.xz -C /opt octave_haswell
+		git clone https://github.com/com-entonos/amzn2-octave.git && cd amzn2-octave && \
+		./to_build /opt/octave_haswell haswell && tar -cJf octave_haswell.tar.xz -C /opt octave_haswell
 
 	
 <b>execute node:</b> Bake into AMI or container, e.g.
