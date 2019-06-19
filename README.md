@@ -18,6 +18,7 @@ if \[processor_type] > compiling machine, then tests for openBLAS and Octave wil
 <b>quick:</b> on running amazon linux 2 instance (vm or ec2) with internet access, then
 	
 		git clone https://github.com/com-entonos/amzn2-octave.git
+		cd amzn2-octave
 		./to_build /opt/octave
 		export PATH:$PATH:/opt/octave/bin
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/octave/lib
