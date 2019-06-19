@@ -24,13 +24,13 @@ if \[processor_type] > compiling machine, then tests for openBLAS and Octave wil
 		octave --texi-macros-file /dev/null
 		
 		
-<b>archive:</b> on running amazon linux 2 instance (vm or ec2), then e.g. on c4.2xlarge
+<b>archive:</b> on running amazon linux 2 instance (vm or ec2), then e.g. on c4.xlarge
 	
 		git clone https://github.com/com-entonos/amzn2-octave.git && cd amzn2-octave && \
 		./to_build /opt/octave_c4 && tar -cJf octave_c5.tar.xz -C /opt octave_c4
 
 	
-<b>execute node:</b> Bake into AMI or container, e.g. on c4.2xlarge
+<b>execute node:</b> Bake into AMI or container, e.g. on c4.xlarge
 	
 		yum update -y
 		yum install -y libgfortran
@@ -50,4 +50,4 @@ NOTES:
 
 when third-party \*.mexa64 files were 'squished' into octave > v4.2.2, rewarded with a runtime error ("free(): invalid next size (fast)"). that's why octave v4.2.2 is default, otherwise octave v5.1.0 is fine by itself (last line of 'to_build_lib_oct').
 
-start to finish: ~35 minutes on AWS c4.2xlarge; ~60 minutes under vmware (4 cores, 8GB; amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova) on macOS 10.13.6 with 2.2GHz Core i7 Sandy Bridge (2720QM).
+start to finish: ~35 minutes on AWS c4.xlarge; ~60 minutes under vmware (4 cores, 8GB; amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova) on macOS 10.13.6 with 2.2GHz Core i7 Sandy Bridge (2720QM).
