@@ -15,17 +15,19 @@ where \[prefix] is the installation directory and \[processor_type] needs to be 
 if \[processor_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = haswell (see 'to_build') so we have avx2.
 
 
-<b>quick:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2) with internet access, then
+<b>quick:</b> on running amazon linux 2 instance (vm or ec2) with internet access, then
 	
+		git clone https://github.com/com-entonos/amzn2-octave.git
 		./to_build /opt/octave
 		export PATH:$PATH:/opt/octave/bin
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/octave/lib
 		octave --texi-macros-file /dev/null
 		
 		
-<b>archive:</b> copy (recursively) contents of this directory to running amazon linux 2 instance (vm or ec2), then e.g.
+<b>archive:</b> on running amazon linux 2 instance (vm or ec2), then e.g.
 	
-		./to_build /opt/octave_haswell haswell && tar -cJf octave_haswell.tar.xz -C /opt octave_haswell
+		git clone https://github.com/com-entonos/amzn2-octave.git && \
+		cd amzn2-octave && ./to_build /opt/octave_haswell haswell && tar -cJf octave_haswell.tar.xz -C /opt octave_haswell
 
 	
 <b>execute node:</b> Bake into AMI or container, e.g.
