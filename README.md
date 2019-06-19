@@ -12,10 +12,10 @@ octave hardcodes full paths during installation so you need to settle on one pla
 		./to_build [prefix [processor_type]]
 
 where \[prefix] is the installation directory and \[processor_type] needs to be defined by both 'gcc -march=' option and in openBLAS's TargetList.txt (see 'to_build_lib_oct').
-if \[processor_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = haswell (see 'to_build') so we have avx2.
+if \[processor_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = native (see 'to_build').
 
 
-<b>quick:</b> on running amazon linux 2 instance (vm or ec2) with internet access, then
+<b>quick:</b> on running amazon linux 2 instance (vm or ec2) with internet access, then e.g.
 	
 		git clone https://github.com/com-entonos/amzn2-octave.git && cd amzn2-octave
 		./to_build /opt/octave
@@ -27,16 +27,16 @@ if \[processor_type] > compiling machine, then tests for openBLAS and Octave wil
 <b>archive:</b> on running amazon linux 2 instance (vm or ec2), then e.g.
 	
 		git clone https://github.com/com-entonos/amzn2-octave.git && cd amzn2-octave && \
-		./to_build /opt/octave_haswell haswell && tar -cJf octave_haswell.tar.xz -C /opt octave_haswell
+		./to_build /opt/octave_c5 && tar -cJf octave_c5.tar.xz -C /opt octave_c5
 
 	
 <b>execute node:</b> Bake into AMI or container, e.g.
 	
 		yum update -y
 		yum install -y libgfortran
-		tar -xf octave_haswell.tar.xz -C /opt
-		export PATH:$PATH:/opt/octave_haswell/bin
-		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/octave_haswell/lib
+		tar -xf octave_c5.tar.xz -C /opt
+		export PATH:$PATH:/opt/octave_c5/bin
+		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/octave_c5/lib
 		octave --texi-macros-file /dev/null --eval "2+3"
 
 
@@ -46,7 +46,7 @@ NOTES:
 1) may need to edit 'pkg/to_build' to include required octave packages (PKGS) and provide a matlab/octave test in 'pkg/test/test.m'
 2) if other than avx/avx2, edit ARCH in 'to_build' (and check fftw configure options in 'to_build_oct_lib')
 3) check \*.log files for possible problems even if no failures
-4) checks may fail if native < ARCH
+4) if native < ARCH checks may fail and octave configure can fail (later can be worked around by changing -march to -mtune for octave)
 5) if processor_type=native then libraries and octave will be compiled for the native machine (e.g. AWS's c5, c4, c3, ...)
 
 when third-party \*.mexa64 files were 'squished' into octave > v4.2.2, rewarded with a runtime error ("free(): invalid next size (fast)"). that's why octave v4.2.2 is default, otherwise octave v5.1.0 is fine by itself (last line of 'to_build_lib_oct').
