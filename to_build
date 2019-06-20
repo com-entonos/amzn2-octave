@@ -21,7 +21,7 @@ p="/shared/octave" && [ -n "$1" ] && p="$1"
 
 #ARCH=processor type for libraries and octave.
 # ARCH needs to be a valid option for both gcc -mtune= option and in openBLAS's TargetList.txt (will convert ARCH to upper case for openBLAS)
-# ARCH=haswell means both avx and avx2 are available
+# ARCH=native will use compiling machine's capabilities
 ARCH="native" && [ -n "$2" ] && ARCH="$2"
 
 #go build libraries, octave, squash *.mexa64, install packages and test w/ pkg/test/test.m
