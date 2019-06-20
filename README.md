@@ -1,6 +1,8 @@
 # amzn2-octave
 minimum octave for amazon linux 2 ami
 
+Copyright (c) 2019 Entonos. All rights reserved.
+
 customer wanted to move matlab workflow to aws for scale but concerned about total cost. profiling typical workflow in octave suggested most of the time was spent in glpk, BLAS/LAPACK and fftw. a proof-of-concept resulted in the following minimum octave build (cli only, ~530MB install directory, ~90MB compressed) and almost 3x faster than the octave in repo and at least a wash with matlab.
 
 should be easy to add additional libraries if required, e.g. arpack, sundials, etc (add to 'to_build_lib_oct')
