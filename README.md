@@ -13,8 +13,8 @@ octave hardcodes full paths during installation so you need to settle on one pla
 
 		./to_build [prefix [processor_type]]
 
-where \[prefix] is the installation directory and \[processor_type] needs to be defined by both 'gcc -march=' option and in openBLAS's TargetList.txt (see 'to_build_lib_oct').
-if \[processor_type] > compiling machine, then tests for openBLAS and Octave will fail. the default \[processor_type] = native (see 'to_build').
+where 'prefix' is the installation directory and 'processor_type' needs to be defined by both 'gcc -march=' option and in openBLAS's TargetList.txt (see 'to_build_lib_oct').
+if 'processor_type' > compiling machine, then tests for openBLAS and Octave will fail. the default 'processor_type' = native (see 'to_build').
 
 
 <b>quick:</b> on running amazon linux 2 instance (vm or ec2) with internet access, then e.g.
