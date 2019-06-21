@@ -19,8 +19,7 @@ case $ARCH in   #mapping of gcc's -march options to openblas?
 esac
 [ -n "${ARCHB}" ] && ARCHB="TARGET=${ARCHB}"
 
-z=""
-[ $(lscpu | grep -c avx) -gt 0 ] && z="--enable-avx" && \
+z="" && [ $(lscpu | grep -c avx) -gt 0 ] && z="--enable-avx" && \
 	[ $(lscpu | grep -c avx2) -gt 0 ] && z="--enable-avx2" && \
 	[ $(lscpu | grep -c avx512) -gt 0 ] && z="--enable-avx512"
 docheck="" && [ "${z}" == "${FFTW}" ] && docheck=1
@@ -69,16 +68,15 @@ function mk_openblas {
 # make test (all=libs netlib test shared) may fail if native < $ARCH
 		if [ -n "${docheck}" ]; then make USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 ${ARCHB} NO_STATIC=1 NO_SHARED=0 \
 		BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2); else \
-		make libs netlib shared USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 ${ARCHB} \
-		NO_STATIC=1 NO_SHARED=0 BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2);fi  && \
+		make libs netlib shared USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 ${ARCHB} NO_STATIC=1 NO_SHARED=0 \
+		BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2) && echo "no check"|tee -a ../openblas.log;fi  && \
 		make NO_STATIC=1 PREFIX="${p}" install > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2) && \
 		cd "${p}/lib" && ln -s libopenblas.so libblas.so && cd "$o" && rm -rf OpenBLAS* ${z}
 }
 
 function mk_octave_510 {   #but there's something wrong since test.m crashes w/ "free(): invalid next size (fast)" because of 3rd party *.mexa64 files given. ugh
         z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/octave/${z}" && \
-                j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && \
-                tar -xvf $z && cd $j && \
+                j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && tar -xvf $z && cd $j && \
                 ./configure --prefix="${p}" --disable-atomic-refcount --disable-rpath --disable-java --enable-static=no \
                 --with-glpk-includedir="${p}/include" --with-glpk-libdir="${p}/lib" --without-portaudio \
                 --disable-docs --with-blas="-lopenblas" --with-fftw3f-includedir="${p}/include" \
@@ -98,8 +96,7 @@ function mk_octave_510 {   #but there's something wrong since test.m crashes w/ 
 }
 function mk_octave_422 {
 	z="$1" && cd "$o" && get_tarball "https://ftp.gnu.org/gnu/octave/${z}" && \
-		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && \
-		tar -xvf $z && cd $j && \
+		j=$(echo $z|sed "s/.tar.gz//"|sed "s/.tgz//"|sed "s/.tar.bz2//") && tar -xvf $z && cd $j && \
 		./configure --prefix="${p}" --disable-atomic-refcount --disable-rpath --disable-java --enable-static=no \
 		--with-glpk-includedir="${p}/include" --with-glpk-libdir="${p}/lib" --without-portaudio \
 		--disable-docs --with-blas="-lopenblas" --with-fftw3f-includedir="${p}/include" \
@@ -108,7 +105,7 @@ function mk_octave_422 {
 		--without-amd --without-OSMesa --without-qt --without-qrupdate --without-fltk --without-opengl --without-bz2 \
 		--without-hdf5 --without-sndfile \
 		CC=gcc CFLAGS="-O2 -mtune=${ARCH} -DM_PI=3.1415926535897932384" \
-		CXX=g++ CXXFLAGS="-g -O2 -mtune=${ARCH}" \
+		CXX=g++ CXXFLAGS="-O2 -mtune=${ARCH}" \
 		F77=gfortran FFLAGS="-O2 -mtune=${ARCH}" \
 		CPPFLAGS="-I${p}/include" LDFLAGS="-L${p}/lib" > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
 		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
