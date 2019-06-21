@@ -52,4 +52,4 @@ NOTES:
 
 when third-party \*.mexa64 files were 'squished' into octave > v4.2.2, rewarded with a runtime error ("free(): invalid next size (fast)"). that's why octave v4.2.2 is default, otherwise octave v5.1.0 is fine by itself (last line of 'to_build_lib_oct').
 
-start to finish: ~35 minutes on AWS c4.xlarge; ~60 minutes under vmware (4 cores, 8GB; amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova) on macOS 10.13.6 with 2.2GHz Core i7 Sandy Bridge (2720QM). Equivalently, optimized build on spot instances c3.xlarge, c4.xlarge, c5.xlearge, m3.xlarge, m4.xlarge and t3.xlarge for a total cost of $0.32.
+start to finish: ~35 minutes on AWS c4.xlarge; ~60 minutes under vmware (4 cores, 8GB; amzn2-vmware_esx-2.0.20190313-x86_64.xfs.gpt.ova) on macOS 10.13.6 with 2.2GHz Core i7 Sandy Bridge (2720QM). Equivalently, optimized build on spot instances c3.xlarge, c4.xlarge, c5.xlarge, m3.xlarge, m4.xlarge and t3.xlarge for a total cost of $0.32.
