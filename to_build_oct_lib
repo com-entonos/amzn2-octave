@@ -12,17 +12,17 @@ case $ARCH in   #mapping of gcc's -march options to openblas?
 	"ivybridge"|"sandybridge")  ARCHB="SANDYBRIDGE" && FFTW="--enable-avx";;
 	"westmere"|"nehalem")  ARCHB="NEHALEM";;
 	*)  #don't know, just use native machine's capabilities...
-		[ $(lscpu | grep avx | wc -l) -gt 0 ] && FFTW="--enable-avx"
-		[ $(lscpu | grep avx2 | wc -l) -gt 0 ] && FFTW="--enable-avx2"
-		[ $(lscpu | grep avx512 | wc -l) -gt 0 ] && FFTW="--enable-avx512"
+		[ $(lscpu | grep -c avx) -gt 0 ] && FFTW="--enable-avx" && \
+			[ $(lscpu | grep -c avx2) -gt 0 ] && FFTW="--enable-avx2" && \
+			[ $(lscpu | grep -c avx512) -gt 0 ] && FFTW="--enable-avx512"
 		[ "${ARCH}" == "native" ] && ARCHB=""
 esac
 [ -n "${ARCHB}" ] && ARCHB="TARGET=${ARCHB}"
 
 z=""
-[ $(lscpu | grep avx | wc -l) -gt 0 ] && z="--enable-avx"
-[ $(lscpu | grep avx2 | wc -l) -gt 0 ] && z="--enable-avx2"
-[ $(lscpu | grep avx512 | wc -l) -gt 0 ] && z="--enable-avx512"
+[ $(lscpu | grep -c avx) -gt 0 ] && z="--enable-avx" && \
+	[ $(lscpu | grep -c avx2) -gt 0 ] && z="--enable-avx2" && \
+	[ $(lscpu | grep -c avx512) -gt 0 ] && z="--enable-avx512"
 docheck="" && [ "${z}" == "${FFTW}" ] && docheck=1
 FFTW+=" --enable-shared=yes --enable-static=no"
 #FFTW+=" --enable-threads --enable-openmp"   we don't need this here
