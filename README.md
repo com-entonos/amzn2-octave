@@ -47,7 +47,7 @@ NOTES:
 0) if you have matlab \*.mexa64 files, place them in 'mex/' and we'll try to squish them into octave (better to make native \*.oct files if possible)
 1) may need to edit 'pkg/to_build' to include required octave packages (PKGS) and provide a matlab/octave test in 'pkg/test/test.m'
 2) check \*.log files for possible problems even if no failures
-3) if native < ARCH checks may fail 
+3) if native < processor_type checks may fail 
 4) if processor_type=native (default) then libraries and octave will be compiled for the native machine (e.g. AWS's c5, c4, c3, m5, ...)
 
 when third-party \*.mexa64 files were 'squished' into octave > v4.2.2, rewarded with a runtime error ("free(): invalid next size (fast)"). that's why octave v4.2.2 is default, otherwise octave v5.1.0 is fine by itself (last line of 'to_build_lib_oct').
