@@ -9,7 +9,7 @@ should be easy to add additional libraries if required, e.g. arpack, sundials, e
 
 octave hardcodes full paths during installation so you need to settle on one place to install octave and stick with that when you bake the octave install in a container/AMI.
 
-<b>summary:</b> install glpk, fftw, openblas and octave to directory [default is /shared/octave] for a given processor type. 
+<b>summary:</b> install glpk, fftw, openblas and octave to directory [default is /shared/octave] for a given processor type [default is native]. 
 
 		./to_build [prefix [processor_type]]
 
