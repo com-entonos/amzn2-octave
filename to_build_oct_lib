@@ -34,7 +34,7 @@ p="/shared/octave" && [ -n "$1" ] && p="$1"
 set -e
 
 function get_tarball {
-	if [ ! -e $(basename "$1") ];then curl -s -L "$1" > $(basename "$1"); fi
+	if [ ! -e $(basename "$1") ];then echo "fetching $(basename "$1")..." && curl -s -L "$1" > $(basename "$1"); fi
 }
 
 function mk_glpk {
