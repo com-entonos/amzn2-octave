@@ -18,6 +18,7 @@ fi
 
 #prefix for install
 p="/shared/octave" && [ -n "$1" ] && p="$1"
+oct="$(basename "${p}")"
 
 #ARCH=processor type for libraries and octave.
 # ARCH needs to be a valid option for both gcc -mtune= option and in openBLAS's TargetList.txt (will convert ARCH to upper case for openBLAS)
@@ -25,4 +26,6 @@ p="/shared/octave" && [ -n "$1" ] && p="$1"
 ARCH="native" && [ -n "$2" ] && ARCH="$2"
 
 #go build libraries, octave, squash *.mexa64, install packages and test w/ pkg/test/test.m
-./to_build_oct_lib "${p}" "${ARCH}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}"
+./to_build_oct_lib "${p}" "${ARCH}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}" && cd .. && \
+	tar -cJf "../${oct}.log.tar.xz" *.err *.log && cd .. && tar -cJf "${oct}.tar.xz" "${oct}" "${oct}.log.tar.xz" && \
+	rm -f "${oct}.log.tar.xz"
