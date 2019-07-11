@@ -11,8 +11,8 @@ PKGS="control-3.2.0.tar.gz nan-3.1.4.tar.gz struct-1.0.16.tar.gz io-2.4.12.tar.g
 
 #grab packages if we don't have them
 for i in ${PKGS}; do
-	[ ! -e "$i" ] && \
-	curl -L https://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/${i}/download > ${i}
+	[ ! -e "$i" ] && echo "fetching $i..." && \
+	curl -s -L https://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/${i}/download > ${i}
 done
 
 mkdir -p "${p}/lib"
