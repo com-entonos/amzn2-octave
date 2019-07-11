@@ -14,14 +14,14 @@ case $ARCH in   #mapping of gcc's -march options to openblas?
 	*)  #don't know, just use native machine's capabilities...
 		[ $(lscpu | grep -c avx) -gt 0 ] && FFTW="--enable-avx" && \
 			[ $(lscpu | grep -c avx2) -gt 0 ] && FFTW="--enable-avx2" && \
-			[ $(lscpu | grep -c avx512) -gt 0 ] && FFTW="--enable-avx512"
+			[ $(lscpu | grep -c avx512) -gt 0 ] && FFTW="--enable-avx2 --enable-avx512"
 		[ "${ARCH}" == "native" ] && ARCHB=""
 esac
 [ -n "${ARCHB}" ] && ARCHB="TARGET=${ARCHB}"
 
 z="" && [ $(lscpu | grep -c avx) -gt 0 ] && z="--enable-avx" && \
 	[ $(lscpu | grep -c avx2) -gt 0 ] && z="--enable-avx2" && \
-	[ $(lscpu | grep -c avx512) -gt 0 ] && z="--enable-avx512"
+	[ $(lscpu | grep -c avx512) -gt 0 ] && z="--enable-avx2 --enable-avx512"
 docheck="" && [ "${z}" == "${FFTW}" ] && docheck=1
 FFTW+=" --enable-shared=yes --enable-static=no"
 #FFTW+=" --enable-threads --enable-openmp"   we don't need this here
@@ -34,7 +34,7 @@ p="/shared/octave" && [ -n "$1" ] && p="$1"
 set -e
 
 function get_tarball {
-	if [ ! -e $(basename "$1") ];then curl -L "$1" > $(basename "$1"); fi
+	if [ ! -e $(basename "$1") ];then curl -s -L "$1" > $(basename "$1"); fi
 }
 
 function mk_glpk {
