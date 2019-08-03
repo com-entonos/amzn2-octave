@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ARCH=native && [ -n "$2" ] && ARCH="$2" #ARCH must be defined for gcc's -march option AND in openblas's TargetList.txt
 NJ=4           #number of jobs for make
@@ -44,7 +44,8 @@ function mk_glpk {
 		make -j${NJ} > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2) && \
 # make check may fail if natve < $ARCH
 		if [ -n "${docheck}" ]; then make -j${NJ} check > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
-		make install > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2) && cd .. && rm -rf ${j}*
+		make install > >(tee -a ../glpk.log) 2> >(tee -a ../glpk.err >&2) && cd .. \
+		&& rm -rf ${j}*
 }
 
 function mk_fftw {
@@ -61,7 +62,8 @@ function mk_fftw {
 		make -j${NJ} > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2) && \
 # make check may fail if natve < $ARCH
 		if [ -n "${docheck}" ]; then make -j${NJ} check > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
-		make install > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2) && cd .. && rm -rf ${j}*
+		make install > >(tee -a ../fftwf.log) 2> >(tee -a ../fftwf.err >&2) && cd .. \
+		&& rm -rf ${j}*
 }
 function mk_openblas {
 	z="$1" && cd "$o" && get_tarball "http://github.com/xianyi/OpenBLAS/archive/${z}" && tar -xvf $z && cd OpenBLAS* && \
@@ -71,7 +73,8 @@ function mk_openblas {
 		make libs netlib shared USE_THREAD=1 USE_OPENMP=1 NO_LAPACKE=1 NO_CBLAS=1 ${ARCHB} NO_STATIC=1 NO_SHARED=0 \
 		BINARY=64 > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2) && echo "no check"|tee -a ../openblas.log;fi  && \
 		make NO_STATIC=1 PREFIX="${p}" install > >(tee -a ../openblas.log) 2> >(tee -a ../openblas.err >&2) && \
-		cd "${p}/lib" && ln -s libopenblas.so libblas.so && cd "$o" && rm -rf OpenBLAS* ${z}
+		cd "${p}/lib" && ln -s libopenblas.so libblas.so && cd "$o" \
+		&& rm -rf OpenBLAS* ${z}
 }
 
 function mk_octave_510 {   #but there's something wrong since test.m crashes w/ "free(): invalid next size (fast)" because of 3rd party *.mexa64 files given. ugh
@@ -91,7 +94,8 @@ function mk_octave_510 {   #but there's something wrong since test.m crashes w/ 
 		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
 # make check may fail if natve < $ARCH
 		if [ -n "${docheck}" ]; then make check > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
-		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && cd .. && rm -rf ${j}*
+		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && cd .. \
+		&& rm -rf ${j}*
 
 }
 function mk_octave_422 {
@@ -111,7 +115,8 @@ function mk_octave_422 {
 		make -j${NJ} > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && \
 # make check may fail if natve < $ARCH
 		if [ -n "${docheck}" ]; then make check > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2); else echo "no check"|tee -a ../glpk.log;fi  && \
-		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && cd .. && rm -rf ${j}*
+		make install > >(tee -a ../octave.log) 2> >(tee -a ../octave.err >&2) && cd .. \
+		&& rm -rf ${j}*
 }
 
 o=${PWD}

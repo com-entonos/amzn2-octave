@@ -1,19 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
 #need to pull in tools and some develoment libraries (texinfo so octave is quiet during 'make check')
 sudo yum update -y
-sudo yum groupinstall -y "Development tools" && \
-sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel texinfo
+sudo yum groupinstall -y "Development tools" \
+	&& sudo yum install -y zlib-devel libcurl-devel ncurses-devel readline-devel pcre-devel texinfo
 
 #let's avoid hdd/ssd - optional (need ~5GB)
-pp="/shared" 
+pp="/shared"
 if [ -d "${pp}/build_octave" ]; then
 	cd "${pp}/build_octave"
 else
-	sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -o size=5G -t tmpfs tmpfs "${pp}" && \
-		mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
+	sudo mkdir -p "${pp}" && sudo chmod 777 "${pp}" && sudo mount -o size=5G -t tmpfs tmpfs "${pp}" \
+		&& mkdir "${pp}/build_octave" && cp -r * "${pp}/build_octave" && cd "${pp}/build_octave"
 fi
 
 #prefix for install
@@ -26,6 +26,5 @@ oct="$(basename "${p}")"
 ARCH="native" && [ -n "$2" ] && ARCH="$2"
 
 #go build libraries, octave, squash *.mexa64, install packages and test w/ pkg/test/test.m
-./to_build_oct_lib "${p}" "${ARCH}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}" && cd .. && \
-	tar -cJf "../${oct}.log.tar.xz" *.err *.log && cd .. && tar -cJf "${oct}.tar.xz" "${oct}" "${oct}.log.tar.xz" && \
-	rm -f "${oct}.log.tar.xz"
+./to_build_oct_lib "${p}" "${ARCH}" && cd mex && ./to_build "${p}" && cd ../pkg && ./to_build "${p}" && cd .. \
+	&& tar -cJf "../${oct}.log.tar.xz" *.err *.log && cd .. && tar -cJf "${oct}.tar.xz" "${oct}" "${oct}.log.tar.xz" && rm -f "${oct}.log.tar.xz"

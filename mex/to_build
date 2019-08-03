@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #this is based on https://hgomersall.wordpress.com/2013/02/19/squishing-matlab-mex-files-into-octave/
 
@@ -17,7 +17,8 @@ if [ ! -e "libmex.so" ]; then gcc -shared -lc -o libmex.so; fi
 if [ ! -e "libmat.so" ]; then gcc -shared -lc -o libmat.so; fi
 cd "${o}"
 
-echo "#include \"mex.h\"
+cat > ud.c <<EOF
+#include "mex.h"
  
 int mxGetString_700(const mxArray *pm, char *str, mwSize strlen)
 {
@@ -27,7 +28,8 @@ int mxGetString_700(const mxArray *pm, char *str, mwSize strlen)
 mxArray *mxCreateDoubleMatrix_700(mwSize m, mwSize n, mxComplexity ComplexFlag)
 {
     return mxCreateDoubleMatrix(m, n, ComplexFlag);
-}" > ud.c
+}
+EOF
 
 "${p}/bin/mkoctfile" -c ud.c  # deal w/ some undocumented matlab functions
 
